@@ -3,69 +3,85 @@
 #     def __init__(self, val=0, next=None):
 #         self.val = val
 #         self.next = next
+
+'''
+reverseNodes()
+    reverses nodes starting from node if length from node >= k
+    else dont reverse
+    
+    return newHead, newTail, nextNode
+
+keep calling reverseNodes until nextNode is None
+after each reversal, connect newTail to head of next reverse
+
+'''
 class Solution:
-    '''
-    handle empty head
-    can list be circular
-    
-    flip(node, k) reverses list if applicable, returns (newHead, newTail, nextNode)
-    after each flip assign newTail.next = nextFlipHead
-    keep flipping until nextNode == None or nextNode == head
-    '''
-    
-    def canReverse(self, node, k):
+    def hasK(self, head, k):
         count = 0
-        curr = node
-        while curr and count < k:
-            curr = curr.next
+        curr = head
+        while curr:
             count += 1
-            
-        return count == k
+            if count >= k:
+                return True
+            curr = curr.next
         
-    def getTail(self, node):
+        
+        return False
+    
+    def getTail(self, head):
+        curr = head
         prev = None
-        curr = node
         while curr:
             prev = curr
             curr = curr.next
         return prev
-        
-        
-        
-    def flip(self, node, k): #returns new head, next node
-        if not node:
+            
+    
+    def reverseNodes(self, head, k):
+        if not head:
             return (None, None, None)
-        elif not self.canReverse(node, k):
-            return (node, self.getTail(node), None)
-        count = 0
-        curr = node
+        elif not self.hasK(head, k):
+            tail =  self.getTail(head)
+            return (head, tail, None)
+        
+        #reverse k nodes
+        newTail = head
+        
+        curr = head
         prev = None
-        nextNode = None
-        while count < k and curr:
-            nextNode = curr.next
+        count = 0
+        while count < k:
+            next = curr.next
             curr.next = prev
             
             prev = curr
-            curr = nextNode
-            count +=1
+            curr = next
+            count += 1
         
-        return (prev, node, nextNode)
+        newHead = prev
+        nextNode = curr
+        return (newHead, newTail, nextNode)
+        
     
     def reverseKGroup(self, head: Optional[ListNode], k: int) -> Optional[ListNode]:
+        #connect each reversal
         if not head:
-            return None
-        newHead, newTail, nextNode = self.flip(head, k)
+            return head
+        elif head and not head.next:
+            return head
+        newHead, newTail, nextNode = self.reverseNodes(head, k)
+        output = newHead
+        
         while nextNode:
-            h, t, n = self.flip(nextNode, k)
-            newTail.next = h
+            tmpTail = newTail
+            tmpNext = nextNode
             
-            nextNode = n
-            newTail = t
-        return newHead
+            h, newTail, nextNode = self.reverseNodes(tmpNext, k)
+            tmpTail.next = h
             
-            
-            
-            
+        
+        
+        return output
                 
                 
                 
